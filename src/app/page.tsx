@@ -189,7 +189,7 @@ export default function Home() {
                   GitHub
                 </a>
                 <a 
-                  href="mailto:ytk.mac@gmail.com" 
+                  href="" 
                   className="px-8 py-3 border border-[#a59aca] text-[#a59aca] rounded-full hover:bg-[#a59aca] hover:text-white transition-colors font-medium inline-flex items-center justify-center"
                 >
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
