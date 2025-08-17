@@ -45,7 +45,7 @@ export default function Home() {
             onClick={scrollToTop}
             className="text-3xl font-bold text-[#4f9bff] cursor-pointer hover:text-[#3b82f6] transition-colors"
           >
-            ytk728's profile
+            ytk728&apos;s profile
           </div>
           <nav className="hidden md:flex space-x-8 text-2xl">
             <a href="#about" onClick={(e) => handleSmoothScroll(e, 'about')} className="hover:text-[#4f9bff] transition-colors cursor-pointer">About</a>
