@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -92,9 +93,11 @@ export default function Home() {
           <div className="mb-8">
             <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-[#4f9bff] to-[#3b82f6] p-1">
               <div className="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden">
-                <img
-                  src="/favicon.ico"
-                  alt="Profile"
+                                <Image 
+                  src="/favicon.ico" 
+                  alt="Profile" 
+                  width={128}
+                  height={128}
                   className="w-full h-full object-contain"
                 />
               </div>
