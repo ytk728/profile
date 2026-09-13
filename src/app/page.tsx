@@ -8,13 +8,15 @@ import SkillsSection from "@/components/SkillsSection";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="city-grain min-h-screen bg-background text-foreground">
       <SiteHeader />
-      <HeroSection />
-      <AboutSection />
-      <ExperienceSection />
-      <SkillsSection />
-      <ContactSection />
+      <main>
+        <HeroSection />
+        <AboutSection />
+        <ExperienceSection />
+        <SkillsSection />
+        <ContactSection />
+      </main>
       <SiteFooter />
     </div>
   );

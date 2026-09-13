@@ -7,11 +7,12 @@ const formatCurrentYearInJapan = () =>
 
 export default function SiteFooter() {
   return (
-    <footer className="py-8 bg-surface border-t border-primary/20">
-      <div className="container mx-auto px-6 text-center">
-        <p className="text-subtle" suppressHydrationWarning>
+    <footer className="border-t border-border">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-2 px-6 py-10 sm:flex-row sm:items-center sm:justify-between">
+        <p className="label-type text-subtle" suppressHydrationWarning>
           © {formatCurrentYearInJapan()} {PROFILE.name}
         </p>
+        <p className="label-type text-subtle">{PROFILE.location}</p>
       </div>
     </footer>
   );
