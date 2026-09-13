@@ -24,3 +24,19 @@ export const getThemeOverride = () => themeOverride;
 export const setThemeOverride = (theme: Theme | null) => {
   themeOverride = theme;
 };
+
+/** Current theme as written on the document element; 'dark' before hydration. */
+export const getTheme = (): Theme =>
+  document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+
+export const getServerTheme = (): Theme => 'dark';
+
+/** Notifies on every theme change, whether it came from the toggle or ThemeAuto. */
+export const subscribeTheme = (onChange: () => void) => {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class'],
+  });
+  return () => observer.disconnect();
+};
