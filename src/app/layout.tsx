@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import ThemeAuto from "./ThemeAuto";
+import { DAY_START_HOUR, NIGHT_START_HOUR } from "./theme";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,15 +19,13 @@ export const metadata: Metadata = {
   description: "Personal profile page of ytk728",
 };
 
-// Applied before first paint so the saved theme does not flash.
+// Picks the theme from the client's local time before the first paint, so it does not flash.
 const themeScript = `
 (function () {
   try {
-    var saved = localStorage.getItem('theme');
-    var isDark = saved
-      ? saved === 'dark'
-      : window.matchMedia('(prefers-color-scheme: dark)').matches;
-    document.documentElement.classList.toggle('dark', isDark);
+    var hour = new Date().getHours();
+    var isDaytime = hour >= ${DAY_START_HOUR} && hour < ${NIGHT_START_HOUR};
+    document.documentElement.classList.toggle('dark', !isDaytime);
   } catch (e) {
     document.documentElement.classList.add('dark');
   }
@@ -45,6 +45,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <ThemeAuto />
         {children}
       </body>
     </html>

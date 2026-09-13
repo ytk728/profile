@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { applyTheme, setThemeOverride, type Theme } from './theme';
 
-type Theme = 'light' | 'dark';
-
-const applyTheme = (theme: Theme) => {
-  document.documentElement.classList.toggle('dark', theme === 'dark');
-};
-
+/**
+ * Local development only: lets both themes be checked without changing the clock.
+ * The pick lasts until reload; `page.tsx` renders it behind a NODE_ENV check, so it
+ * is dropped from production builds.
+ */
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>('dark');
 
@@ -18,12 +18,8 @@ export default function ThemeToggle() {
   const toggleTheme = () => {
     const next: Theme = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
+    setThemeOverride(next);
     applyTheme(next);
-    try {
-      localStorage.setItem('theme', next);
-    } catch {
-      // localStorage may be unavailable (private mode etc.)
-    }
   };
 
   return (
@@ -31,7 +27,7 @@ export default function ThemeToggle() {
       onClick={toggleTheme}
       className="text-primary p-2 rounded-md hover:bg-primary/10 transition-colors cursor-pointer"
       aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-      title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      title={`[dev] ${theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}`}
     >
       {theme === 'dark' ? (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

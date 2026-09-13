@@ -4,6 +4,9 @@ import { useState } from 'react';
 import Image from 'next/image';
 import ThemeToggle from './ThemeToggle';
 
+// Inlined by the bundler so the toggle is dropped entirely from production builds.
+const isThemeOverrideEnabled = process.env.NODE_ENV === 'development';
+
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -54,11 +57,13 @@ export default function Home() {
             <a href="#skills" onClick={(e) => handleSmoothScroll(e, 'skills')} className="hover:text-primary transition-colors cursor-pointer">Skills</a>
             <a href="#contact" onClick={(e) => handleSmoothScroll(e, 'contact')} className="hover:text-primary transition-colors cursor-pointer">Contact</a>
           </nav>
-          <div className="hidden md:block">
-            <ThemeToggle />
-          </div>
+          {isThemeOverrideEnabled && (
+            <div className="hidden md:block">
+              <ThemeToggle />
+            </div>
+          )}
           <div className="md:hidden flex items-center gap-1">
-            <ThemeToggle />
+            {isThemeOverrideEnabled && <ThemeToggle />}
             <button
               onClick={toggleMobileMenu}
               className="text-primary p-2 rounded-md hover:bg-primary/10 transition-colors"
