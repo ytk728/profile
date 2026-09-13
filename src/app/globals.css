@@ -12,6 +12,7 @@
   --subtle: #6b7280;
   --primary: #2563eb;
   --primary-dark: #1d4ed8;
+  --on-primary: #ffffff;
   --border: rgba(37, 99, 235, 0.2);
   --border-soft: rgba(37, 99, 235, 0.1);
   --hero-overlay: rgba(255, 255, 255, 0.35);
@@ -30,6 +31,7 @@
   --subtle: #9ca3af;
   --primary: #4f9bff;
   --primary-dark: #3b82f6;
+  --on-primary: #0b1b33;
   --border: rgba(79, 155, 255, 0.2);
   --border-soft: rgba(79, 155, 255, 0.1);
   --hero-overlay: rgba(0, 0, 0, 0.2);
@@ -47,6 +49,7 @@
   --color-subtle: var(--subtle);
   --color-primary: var(--primary);
   --color-primary-dark: var(--primary-dark);
+  --color-on-primary: var(--on-primary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
