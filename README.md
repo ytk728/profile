@@ -1,3 +1,3 @@
 # ytk728's profile page
 
-https://info.yutaka.work
+https://career.machidayutaka.jp
