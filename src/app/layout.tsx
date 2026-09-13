@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Profile - ytk728",
-  description: "Personal profile page of ytk728",
+  title: "ytk728",
+  description: "Software engineer based in Tokyo. Web application development.",
 };
 
 const themeScriptRunBeforeFirstPaint = `
