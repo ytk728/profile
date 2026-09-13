@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { applyTheme, getThemeOverride, themeForDate } from "./theme";
+import { applyTheme, getThemeOverride, themeForDate } from "@/lib/theme";
 
 const THEME_RECHECK_INTERVAL_MS = 60_000;
 

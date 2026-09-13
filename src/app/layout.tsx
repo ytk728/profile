@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ThemeAuto from "./ThemeAuto";
-import { DAY_START_HOUR, NIGHT_START_HOUR } from "./theme";
+import ThemeAuto from "@/components/ThemeAuto";
+import { DAY_START_HOUR, NIGHT_START_HOUR } from "@/lib/theme";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
