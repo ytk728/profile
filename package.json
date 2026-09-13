@@ -14,7 +14,7 @@
     "prepare": "lefthook install",
     "check": "biome check --write",
     "check:ci": "biome ci",
-    "career:import": "node scripts/import-linkedin-export.mts"
+    "career:import": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/import-linkedin-export.mts"
   },
   "dependencies": {
     "next": "16.3.5",

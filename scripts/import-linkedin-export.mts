@@ -1,30 +1,14 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-
-type CareerRole = {
-  title: string;
-  details: string[];
-};
-
-type CareerEntry = {
-  organization: string;
-  initial: string;
-  period: string;
-  roles: CareerRole[];
-};
-
-type CareerData = {
-  work: CareerEntry[];
-  education: CareerEntry[];
-  skills: { category: string; items: string[] }[];
-};
+import { EXPERIENCES, type Experience, type ExperienceRole } from "../src/data/experiences.ts";
 
 type YearMonth = {
   year: number;
   month: number | null;
 };
 
-const CAREER_JSON_PATH = resolve("src/content/career.json");
+const EXPERIENCES_MODULE_PATH = resolve("src/data/experiences.ts");
+const EXPERIENCES_DECLARATION = "export const EXPERIENCES: Experience[] = ";
 const DEFAULT_EXPORT_DIR = "linkedin-export";
 
 const MONTH_NUMBERS_BY_LOWERCASE_ABBREVIATION: Record<string, number> = {
@@ -135,12 +119,11 @@ const formatJapaneseYearMonth = (yearMonth: YearMonth): string =>
   yearMonth.month === null ? `${yearMonth.year}年` : `${yearMonth.year}年${yearMonth.month}月`;
 
 const formatPeriod = (start: YearMonth | null, end: YearMonth | null): string => {
-  const formattedStart = start === null ? "" : formatJapaneseYearMonth(start);
   const formattedEnd = end === null ? "現在" : formatJapaneseYearMonth(end);
-  return formattedStart === "" ? formattedEnd : `${formattedStart} - ${formattedEnd}`;
+  return start === null ? formattedEnd : `${formatJapaneseYearMonth(start)} - ${formattedEnd}`;
 };
 
-const splitIntoDetailLines = (description: string): string[] =>
+const splitIntoAchievements = (description: string): string[] =>
   description
     .split("\n")
     .map((line) => line.replace(/^[-・•*]\s*/, "").trim())
@@ -151,12 +134,20 @@ type GroupedOrganization = {
   start: YearMonth | null;
   end: YearMonth | null;
   isOngoing: boolean;
-  roles: CareerRole[];
+  roles: ExperienceRole[];
+};
+
+type CsvColumns = {
+  organization: string;
+  title: string;
+  achievements: string;
+  start: string;
+  end: string;
 };
 
 const groupRowsByOrganization = (
   records: Record<string, string>[],
-  columns: { organization: string; title: string; details: string; start: string; end: string },
+  columns: CsvColumns,
 ): GroupedOrganization[] => {
   const groupsByOrganization = new Map<string, GroupedOrganization>();
 
@@ -178,25 +169,24 @@ const groupRowsByOrganization = (
     };
 
     if (existingGroup) {
-      if (
+      const startsEarlier =
         start !== null &&
-        (group.start === null || toComparableNumber(start) < toComparableNumber(group.start))
-      ) {
-        group.start = start;
-      }
+        (group.start === null || toComparableNumber(start) < toComparableNumber(group.start));
+      if (startsEarlier) group.start = start;
+
+      const endsLater =
+        end !== null &&
+        (group.end === null || toComparableNumber(end) > toComparableNumber(group.end));
       if (isOngoing) {
         group.isOngoing = true;
-      } else if (
-        end !== null &&
-        (group.end === null || toComparableNumber(end) > toComparableNumber(group.end))
-      ) {
+      } else if (endsLater) {
         group.end = end;
       }
     }
 
     group.roles.push({
       title: record[columns.title] ?? "",
-      details: splitIntoDetailLines(record[columns.details] ?? ""),
+      achievements: splitIntoAchievements(record[columns.achievements] ?? ""),
     });
 
     groupsByOrganization.set(organization, group);
@@ -205,35 +195,58 @@ const groupRowsByOrganization = (
   return [...groupsByOrganization.values()];
 };
 
-const toCareerEntry = (group: GroupedOrganization, existingEntries: CareerEntry[]): CareerEntry => {
-  const existingEntry = existingEntries.find((entry) => entry.organization === group.organization);
+const toExperience = (group: GroupedOrganization): Experience => {
+  const curatedEntry = EXPERIENCES.find((entry) => entry.organization === group.organization);
 
   return {
     organization: group.organization,
-    initial: existingEntry?.initial ?? [...group.organization][0] ?? "?",
+    organizationInitial: curatedEntry?.organizationInitial ?? [...group.organization][0] ?? "?",
     period: formatPeriod(group.start, group.isOngoing ? null : group.end),
     roles: group.roles,
   };
 };
 
 const mergePreservingCuratedOrder = (
-  existingEntries: CareerEntry[],
-  importedEntries: CareerEntry[],
-): CareerEntry[] => {
+  importedPositions: Experience[],
+  importedSchools: Experience[],
+): Experience[] => {
   const importedByOrganization = new Map(
-    importedEntries.map((entry) => [entry.organization, entry]),
+    [...importedPositions, ...importedSchools].map((entry) => [entry.organization, entry]),
   );
 
-  const keptInExistingOrder = existingEntries
-    .map((entry) => importedByOrganization.get(entry.organization))
-    .filter((entry): entry is CareerEntry => entry !== undefined);
+  const keptInCuratedOrder = EXPERIENCES.map((entry) =>
+    importedByOrganization.get(entry.organization),
+  ).filter((entry): entry is Experience => entry !== undefined);
 
-  const existingOrganizations = new Set(existingEntries.map((entry) => entry.organization));
-  const newlyAdded = importedEntries.filter(
-    (entry) => !existingOrganizations.has(entry.organization),
-  );
+  const curatedOrganizations = new Set(EXPERIENCES.map((entry) => entry.organization));
+  const isNew = (entry: Experience) => !curatedOrganizations.has(entry.organization);
 
-  return [...newlyAdded, ...keptInExistingOrder];
+  return [
+    ...importedPositions.filter(isNew),
+    ...keptInCuratedOrder,
+    ...importedSchools.filter(isNew),
+  ];
+};
+
+const toStringLiteral = (value: string): string => JSON.stringify(value);
+
+const serializeExperiences = (experiences: Experience[]): string => {
+  const serializeRole = (role: ExperienceRole) =>
+    `{ title: ${toStringLiteral(role.title)}, achievements: [${role.achievements
+      .map(toStringLiteral)
+      .join(", ")}] }`;
+
+  const serializeEntry = (experience: Experience) =>
+    [
+      "  {",
+      `    organization: ${toStringLiteral(experience.organization)},`,
+      `    organizationInitial: ${toStringLiteral(experience.organizationInitial)},`,
+      `    period: ${toStringLiteral(experience.period)},`,
+      `    roles: [${experience.roles.map(serializeRole).join(", ")}],`,
+      "  },",
+    ].join("\n");
+
+  return `[\n${experiences.map(serializeEntry).join("\n")}\n]`;
 };
 
 const exportDir = resolve(process.argv[2] ?? DEFAULT_EXPORT_DIR);
@@ -244,54 +257,47 @@ if (!existsSync(exportDir)) {
   process.exit(1);
 }
 
-const existingCareer: CareerData = JSON.parse(readFileSync(CAREER_JSON_PATH, "utf8"));
-
 const positionGroups = groupRowsByOrganization(
   readCsvRecords(join(exportDir, "Positions.csv"), "Company Name"),
   {
     organization: "Company Name",
     title: "Title",
-    details: "Description",
+    achievements: "Description",
     start: "Started On",
     end: "Finished On",
   },
 );
 
-const educationGroups = groupRowsByOrganization(
+const schoolGroups = groupRowsByOrganization(
   readCsvRecords(join(exportDir, "Education.csv"), "School Name"),
   {
     organization: "School Name",
     title: "Degree Name",
-    details: "Notes",
+    achievements: "Notes",
     start: "Start Date",
     end: "End Date",
   },
 );
 
-if (positionGroups.length === 0 && educationGroups.length === 0) {
+if (positionGroups.length === 0 && schoolGroups.length === 0) {
   console.error(`${exportDir} に Positions.csv / Education.csv が見つかりません。`);
   process.exit(1);
 }
 
-const importedWork = positionGroups.map((group) => toCareerEntry(group, existingCareer.work));
-const importedEducation = educationGroups.map((group) =>
-  toCareerEntry(group, existingCareer.education),
+const mergedExperiences = mergePreservingCuratedOrder(
+  positionGroups.map(toExperience),
+  schoolGroups.map(toExperience),
 );
 
-const mergedCareer: CareerData = {
-  work:
-    importedWork.length > 0
-      ? mergePreservingCuratedOrder(existingCareer.work, importedWork)
-      : existingCareer.work,
-  education:
-    importedEducation.length > 0
-      ? mergePreservingCuratedOrder(existingCareer.education, importedEducation)
-      : existingCareer.education,
-  skills: existingCareer.skills,
-};
+const moduleSource = readFileSync(EXPERIENCES_MODULE_PATH, "utf8");
+const declarationIndex = moduleSource.indexOf(EXPERIENCES_DECLARATION);
+if (declarationIndex === -1) {
+  throw new Error(`${EXPERIENCES_MODULE_PATH} に ${EXPERIENCES_DECLARATION} が見つかりません`);
+}
 
-writeFileSync(CAREER_JSON_PATH, `${JSON.stringify(mergedCareer, null, 2)}\n`, "utf8");
+const preservedHeader = moduleSource.slice(0, declarationIndex);
+const regeneratedDeclaration = `${EXPERIENCES_DECLARATION}${serializeExperiences(mergedExperiences)};\n`;
+writeFileSync(EXPERIENCES_MODULE_PATH, preservedHeader + regeneratedDeclaration, "utf8");
 
-console.log(`${CAREER_JSON_PATH} を更新しました`);
-console.log(`  職歴 ${mergedCareer.work.length} 件 / 学歴 ${mergedCareer.education.length} 件`);
-console.log("git diff で内容を確認し、initial と表記を整えてからコミットしてください。");
+console.log(`${EXPERIENCES_MODULE_PATH} を更新しました (${mergedExperiences.length} 件)`);
+console.log("pnpm check で整形し、git diff で内容を確認してからコミットしてください。");
