@@ -19,8 +19,7 @@ export const metadata: Metadata = {
   description: "Personal profile page of ytk728",
 };
 
-// Picks the theme from the client's local time before the first paint, so it does not flash.
-const themeScript = `
+const themeScriptRunBeforeFirstPaint = `
 (function () {
   try {
     var hour = new Date().getHours();
@@ -40,11 +39,9 @@ export default function RootLayout({
   return (
     <html lang="ja" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script>{themeScriptRunBeforeFirstPaint}</script>
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeAuto />
         {children}
       </body>

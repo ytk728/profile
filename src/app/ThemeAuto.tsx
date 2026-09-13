@@ -1,28 +1,26 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { applyTheme, getThemeOverride, themeForDate } from './theme';
+import { useEffect } from "react";
+import { applyTheme, getThemeOverride, themeForDate } from "./theme";
 
-/**
- * Keeps the theme in sync with the client's local time while the page stays open,
- * so a tab left open across the switch-over hour still flips.
- */
+const THEME_RECHECK_INTERVAL_MS = 60_000;
+
 export default function ThemeAuto() {
   useEffect(() => {
-    const sync = () => {
+    const syncThemeWithLocalTime = () => {
       applyTheme(getThemeOverride() ?? themeForDate(new Date()));
     };
 
-    sync();
+    syncThemeWithLocalTime();
 
-    const intervalId = window.setInterval(sync, 60_000);
-    window.addEventListener('focus', sync);
-    document.addEventListener('visibilitychange', sync);
+    const intervalId = window.setInterval(syncThemeWithLocalTime, THEME_RECHECK_INTERVAL_MS);
+    window.addEventListener("focus", syncThemeWithLocalTime);
+    document.addEventListener("visibilitychange", syncThemeWithLocalTime);
 
     return () => {
       window.clearInterval(intervalId);
-      window.removeEventListener('focus', sync);
-      document.removeEventListener('visibilitychange', sync);
+      window.removeEventListener("focus", syncThemeWithLocalTime);
+      document.removeEventListener("visibilitychange", syncThemeWithLocalTime);
     };
   }, []);
 
