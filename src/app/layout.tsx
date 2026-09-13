@@ -17,13 +17,31 @@ export const metadata: Metadata = {
   description: "Personal profile page of ytk728",
 };
 
+// Applied before first paint so the saved theme does not flash.
+const themeScript = `
+(function () {
+  try {
+    var saved = localStorage.getItem('theme');
+    var isDark = saved
+      ? saved === 'dark'
+      : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.classList.toggle('dark', isDark);
+  } catch (e) {
+    document.documentElement.classList.add('dark');
+  }
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
