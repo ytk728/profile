@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { careerTimeline, skillCategories } from "@/content/career";
 import DevThemeToggle from "./DevThemeToggle";
 
 const isDevThemeToggleEnabled = process.env.NODE_ENV === "development";
@@ -194,70 +195,31 @@ export default function Home() {
               ></div>
 
               <div className="space-y-8">
-                <div className="flex items-start space-x-4 relative">
-                  <div className="flex-shrink-0 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-on-primary font-bold relative z-10">
-                    W
-                  </div>
-                  <div className="flex-1 bg-surface p-6 rounded-lg border border-primary/20">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
-                      <h3 className="text-xl font-bold text-primary">WealthNavi</h3>
-                      <span className="text-sm text-subtle">2024年7月 - 現在</span>
+                {careerTimeline.map((entry) => (
+                  <div key={entry.organization} className="flex items-start space-x-4 relative">
+                    <div className="flex-shrink-0 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-on-primary font-bold relative z-10">
+                      {entry.initial}
                     </div>
-                    <p className="text-primary font-semibold mb-2">プロダクト開発チーム</p>
-                    <div className="text-muted text-base space-y-1 mb-3">
-                      <p>新規プロダクト開発</p>
-                    </div>
-                    <p className="text-primary font-semibold mb-2">金融システム開発チーム</p>
-                    <div className="text-muted text-base space-y-1">
-                      <p>口座開設関連アプリケーション開発</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-4 relative">
-                  <div className="flex-shrink-0 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-on-primary font-bold relative z-10">
-                    F
-                  </div>
-                  <div className="flex-1 bg-surface p-6 rounded-lg border border-primary/20">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
-                      <h3 className="text-xl font-bold text-primary">フリーランス</h3>
-                      <span className="text-sm text-subtle">2024年12月 - 現在</span>
-                    </div>
-                    <p className="text-primary font-semibold mb-2">エンジニア</p>
-                    <div className="text-muted text-base space-y-1">
-                      <p>フリーランス向け書類作成アプリケーション開発</p>
+                    <div className="flex-1 bg-surface p-6 rounded-lg border border-primary/20">
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
+                        <h3 className="text-xl font-bold text-primary">{entry.organization}</h3>
+                        <span className="text-sm text-subtle">{entry.period}</span>
+                      </div>
+                      <div className="space-y-3">
+                        {entry.roles.map((role) => (
+                          <div key={role.title}>
+                            <p className="text-primary font-semibold mb-2">{role.title}</p>
+                            <div className="text-muted text-base space-y-1">
+                              {role.details.map((detail) => (
+                                <p key={detail}>{detail}</p>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex items-start space-x-4 relative">
-                  <div className="flex-shrink-0 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-on-primary font-bold relative z-10">
-                    S
-                  </div>
-                  <div className="flex-1 bg-surface p-6 rounded-lg border border-primary/20">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
-                      <h3 className="text-xl font-bold text-primary">シンプレクス株式会社</h3>
-                      <span className="text-sm text-subtle">2022年4月 - 2024年6月</span>
-                    </div>
-                    <p className="text-primary font-semibold mb-2">D2</p>
-                    <div className="text-muted text-base space-y-1">
-                      <p>証券会社向けアプリケーション開発</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-4 relative">
-                  <div className="flex-shrink-0 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-on-primary font-bold relative z-10">
-                    M
-                  </div>
-                  <div className="flex-1 bg-surface p-6 rounded-lg border border-primary/20">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
-                      <h3 className="text-xl font-bold text-primary">明治大学</h3>
-                      <span className="text-sm text-subtle">2015年4月 - 2019年3月</span>
-                    </div>
-                    <p className="text-primary font-semibold mb-2">理工学部</p>
-                    <div className="text-muted text-base">
-                      <p>機械情報工学科</p>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -271,50 +233,23 @@ export default function Home() {
             </h2>
             <div className="bg-surface-alt p-8 rounded-lg border border-primary/20">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-surface p-4 rounded-lg text-left border border-primary/10">
-                  <div className="text-primary font-semibold text-left mb-2">Backend</div>
-                  <div className="text-base text-subtle">
-                    <ul className="list-disc list-inside space-y-1">
-                      <li>Java</li>
-                      <li>Spring Boot</li>
-                      <li>Node.js</li>
-                      <li>NestJS</li>
-                      <li>TypeScript</li>
-                    </ul>
+                {skillCategories.map((skillCategory) => (
+                  <div
+                    key={skillCategory.category}
+                    className="bg-surface p-4 rounded-lg text-left border border-primary/10"
+                  >
+                    <div className="text-primary font-semibold text-left mb-2">
+                      {skillCategory.category}
+                    </div>
+                    <div className="text-base text-subtle">
+                      <ul className="list-disc list-inside space-y-1">
+                        {skillCategory.items.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                </div>
-                <div className="bg-surface p-4 rounded-lg text-left border border-primary/10">
-                  <div className="text-primary font-semibold text-left mb-2">Frontend</div>
-                  <div className="text-base text-subtle">
-                    <ul className="list-disc list-inside space-y-1">
-                      <li>React</li>
-                      <li>Next.js</li>
-                      <li>TypeScript</li>
-                      <li>Tailwind CSS</li>
-                    </ul>
-                  </div>
-                </div>
-                <div className="bg-surface p-4 rounded-lg text-left border border-primary/10">
-                  <div className="text-primary font-semibold text-left mb-2">Middleware</div>
-                  <div className="text-base text-subtle">
-                    <ul className="list-disc list-inside space-y-1">
-                      <li>MySQL</li>
-                      <li>PostgreSQL</li>
-                      <li>Redis</li>
-                    </ul>
-                  </div>
-                </div>
-                <div className="bg-surface p-4 rounded-lg text-left border border-primary/10">
-                  <div className="text-primary font-semibold text-left mb-2">Tools</div>
-                  <div className="text-base text-subtle">
-                    <ul className="list-disc list-inside space-y-1">
-                      <li>Git/GitHub</li>
-                      <li>AWS</li>
-                      <li>Docker</li>
-                      <li>Auth0</li>
-                    </ul>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
