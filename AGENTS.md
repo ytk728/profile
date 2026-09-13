@@ -38,3 +38,36 @@ Biome に一本化している。ルールを無効化する前に、まずコ�
 - `pnpm typecheck` — 型検査
 
 コミット時は lefthook が staged ファイルに `biome check --write` を適用する。
+
+# Git 運用ルール
+
+## ブランチ
+
+`main` へ直接コミットしない。`<type>/<summary>` 形式のブランチを切って PR を出す。
+
+- `feat/light-dark-mode`、`fix/build`、`chore/pr-ci`
+- type はコミットメッセージの type と揃える(`feat` は `add` の別名として許容)
+
+## コミットメッセージ
+
+件名は `[type]summary` の 1 行。`type` の後ろにスペースは入れない。
+
+```
+[fix]prevent theme flash on first paint
+[chore]add PR CI, pre-commit hooks, and migrate lint/format to Biome
+```
+
+- type: `add` / `change` / `fix` / `remove` / `refactor` / `style` / `docs` / `test` / `chore`
+- summary は英語の命令形・小文字始まり、末尾にピリオドを付けない
+- 「なぜ」はコミット本文か PR の説明に書く(コードにコメントは書かない)
+- 1 コミット 1 目的。フォーマット差分と実装差分は混ぜない
+- マージコミットと revert コミットは対象外
+
+この形式は lefthook の `commit-msg` フックで `scripts/validate-commit-msg.sh` が検証する。
+
+## プルリクエスト
+
+- テンプレート `.github/pull_request_template.md` の項目を埋める
+- マージ前に CI(`pnpm check:ci` / `pnpm typecheck` / `pnpm build`)を通す
+
+lefthook が pre-commit で Biome、pre-push で `pnpm typecheck` を実行する。`pnpm build` は CI のみ。

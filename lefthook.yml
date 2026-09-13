@@ -4,3 +4,13 @@ pre-commit:
       glob: "*.{js,jsx,ts,tsx,mjs,cjs,json,jsonc,css}"
       run: pnpm exec biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
       stage_fixed: true
+
+commit-msg:
+  jobs:
+    - name: commit message format
+      run: sh scripts/validate-commit-msg.sh {1}
+
+pre-push:
+  jobs:
+    - name: typecheck
+      run: pnpm typecheck
