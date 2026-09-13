@@ -2,12 +2,18 @@
   "name": "profile",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.33.2",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint .",
-    "export": "next build"
+    "lint": "biome lint",
+    "export": "next build",
+    "format": "biome format --write",
+    "typecheck": "tsc --noEmit",
+    "prepare": "lefthook install",
+    "check": "biome check --write",
+    "check:ci": "biome ci"
   },
   "dependencies": {
     "next": "16.3.5",
@@ -15,12 +21,12 @@
     "react-dom": "19.3.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.13",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^24.13.4",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "eslint": "^10.10.0",
-    "eslint-config-next": "16.3.5",
+    "lefthook": "^2.1.12",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3"
   },
