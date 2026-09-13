@@ -7,6 +7,9 @@ import DevThemeToggle from "./DevThemeToggle";
 const isDevThemeToggleEnabled = process.env.NODE_ENV === "development";
 const TIMELINE_LINE_HEIGHT_STOPPING_BEFORE_LAST_ITEM = "calc(100% - 120px)";
 
+const formatCurrentYearInJapan = () =>
+  new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Tokyo", year: "numeric" }).format(new Date());
+
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -40,7 +43,7 @@ export default function Home() {
             onClick={scrollToTop}
             className="text-3xl font-bold text-primary cursor-pointer hover:text-primary-dark transition-colors"
           >
-            ytk728&apos;s profile
+            ytk728
           </button>
           <nav className="hidden md:flex space-x-8 text-2xl">
             <a href="#about" className="hover:text-primary transition-colors cursor-pointer">
@@ -173,8 +176,6 @@ export default function Home() {
             <div className="bg-surface-alt p-8 rounded-lg border border-primary/20">
               <p className="text-lg text-muted leading-relaxed">
                 東京都在住でWEBアプリケーションエンジニアをしています。
-                <br />
-                趣味はポケモン（ゲーム）とフットサルです。
               </p>
             </div>
           </div>
@@ -214,11 +215,11 @@ export default function Home() {
                 </div>
                 <div className="flex items-start space-x-4 relative">
                   <div className="flex-shrink-0 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-on-primary font-bold relative z-10">
-                    B
+                    F
                   </div>
                   <div className="flex-1 bg-surface p-6 rounded-lg border border-primary/20">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
-                      <h3 className="text-xl font-bold text-primary">業務委託</h3>
+                      <h3 className="text-xl font-bold text-primary">フリーランス</h3>
                       <span className="text-sm text-subtle">2024年12月 - 現在</span>
                     </div>
                     <p className="text-primary font-semibold mb-2">エンジニア</p>
@@ -309,7 +310,6 @@ export default function Home() {
                     <ul className="list-disc list-inside space-y-1">
                       <li>Git/GitHub</li>
                       <li>AWS</li>
-                      <li>Cursor/Devin</li>
                       <li>Docker</li>
                       <li>Auth0</li>
                     </ul>
@@ -325,9 +325,7 @@ export default function Home() {
           <div className="max-w-6xl mx-auto text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-16 text-primary">Contact</h2>
             <div className="bg-surface p-8 rounded-lg border border-primary/20">
-              <p className="text-2xl text-muted mb-8">
-                Let&apos;s connect and discuss opportunities
-              </p>
+              <p className="text-2xl text-muted mb-8">Get in touch.</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <a
                   href="https://github.com/ytk728"
@@ -368,8 +366,8 @@ export default function Home() {
       </section>
       <footer className="py-8 bg-surface border-t border-primary/20">
         <div className="container mx-auto px-6 text-center">
-          <p className="text-subtle">
-            © 2025 ytk728. Built with Next.js and deployed on GitHub Pages.
+          <p className="text-subtle" suppressHydrationWarning>
+            © {formatCurrentYearInJapan()} ytk728
           </p>
         </div>
       </footer>
