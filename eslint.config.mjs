@@ -1,17 +1,12 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+import coreWebVitals from "eslint-config-next/core-web-vitals";
+import typescript from "eslint-config-next/typescript";
 
 const eslintConfig = [
-  { ignores: ["out/**"] },
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  { ignores: ["out/**", ".next/**"] },
+  ...coreWebVitals,
+  ...typescript,
+  // eslint-plugin-react's auto-detection breaks under ESLint 10, so pin the version.
+  { settings: { react: { version: "19.3" } } },
 ];
 
 export default eslintConfig;

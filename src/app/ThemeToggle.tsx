@@ -1,7 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { applyTheme, setThemeOverride, type Theme } from './theme';
+import { useSyncExternalStore } from 'react';
+import {
+  applyTheme,
+  getServerTheme,
+  getTheme,
+  setThemeOverride,
+  subscribeTheme,
+  type Theme,
+} from './theme';
 
 /**
  * Local development only: lets both themes be checked without changing the clock.
@@ -9,15 +16,10 @@ import { applyTheme, setThemeOverride, type Theme } from './theme';
  * is dropped from production builds.
  */
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>('dark');
-
-  useEffect(() => {
-    setTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-  }, []);
+  const theme = useSyncExternalStore(subscribeTheme, getTheme, getServerTheme);
 
   const toggleTheme = () => {
     const next: Theme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(next);
     setThemeOverride(next);
     applyTheme(next);
   };
