@@ -7,9 +7,11 @@ import { NAVIGATION_ITEMS } from "@/data/navigationItems";
 import { PROFILE } from "@/data/profile";
 
 const isDevThemeToggleEnabled = process.env.NODE_ENV === "development";
+const SCROLLED_PAST_HERO_THRESHOLD_PX = 24;
 
 export default function SiteHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
   const mobileNavRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -20,6 +22,14 @@ export default function SiteHeader() {
     return () => mobileNav.removeEventListener("click", closeMobileMenuOnNavigation);
   }, []);
 
+  useEffect(() => {
+    const syncScrolledState = () =>
+      setHasScrolled(window.scrollY > SCROLLED_PAST_HERO_THRESHOLD_PX);
+    syncScrolledState();
+    window.addEventListener("scroll", syncScrolledState, { passive: true });
+    return () => window.removeEventListener("scroll", syncScrolledState);
+  }, []);
+
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   const scrollToTop = () => {
@@ -27,53 +37,54 @@ export default function SiteHeader() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-sm border-b border-primary/20">
-      <div className="container mx-auto px-8 py-6 flex justify-between items-center">
+    <header
+      className={`fixed top-0 right-0 left-0 z-50 transition-colors duration-300 ${
+        hasScrolled ? "border-b border-border bg-background/80 backdrop-blur-md" : ""
+      }`}
+    >
+      <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-5">
         <button
           type="button"
           onClick={scrollToTop}
-          className="text-3xl font-bold text-primary cursor-pointer hover:text-primary-dark transition-colors"
+          className="label-type cursor-pointer text-foreground transition-colors hover:text-primary"
         >
           {PROFILE.name}
         </button>
-        <nav className="hidden md:flex space-x-8 text-2xl">
-          {NAVIGATION_ITEMS.map(({ href, label }) => (
-            <a
-              key={href}
-              href={href}
-              className="hover:text-primary transition-colors cursor-pointer"
-            >
-              {label}
-            </a>
-          ))}
-        </nav>
-        {isDevThemeToggleEnabled && (
-          <div className="hidden md:block">
-            <DevThemeToggle />
-          </div>
-        )}
-        <div className="md:hidden flex items-center gap-1">
+        <div className="flex items-center gap-6">
+          <nav className="hidden items-center gap-8 md:flex">
+            {NAVIGATION_ITEMS.map(({ href, label }) => (
+              <a
+                key={href}
+                href={href}
+                className="label-type neon-underline cursor-pointer text-subtle transition-colors hover:text-foreground"
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
           {isDevThemeToggleEnabled && <DevThemeToggle />}
           <button
             type="button"
             onClick={toggleMobileMenu}
-            className="text-primary p-2 rounded-md hover:bg-primary/10 transition-colors"
+            className="text-primary transition-colors hover:text-accent md:hidden"
             aria-label="Toggle mobile menu"
             aria-expanded={isMobileMenuOpen}
           >
-            <Icon name={isMobileMenuOpen ? "close" : "menu"} />
+            <Icon name={isMobileMenuOpen ? "close" : "menu"} className="h-6 w-6" />
           </button>
         </div>
       </div>
       <div
-        className={`md:hidden bg-background border-b border-primary/20 transition-all duration-300 overflow-hidden ${isMobileMenuOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0"}`}
+        className={`overflow-hidden border-border bg-background/95 backdrop-blur-md transition-all duration-300 md:hidden ${
+          isMobileMenuOpen ? "max-h-72 border-b opacity-100" : "max-h-0 opacity-0"
+        }`}
       >
-        <nav ref={mobileNavRef} className="container mx-auto px-8 py-4 space-y-4">
+        <nav ref={mobileNavRef} className="mx-auto w-full max-w-5xl px-6 py-4">
           {NAVIGATION_ITEMS.map(({ href, label }) => (
             <a
               key={href}
               href={href}
-              className="block text-xl hover:text-primary transition-colors cursor-pointer"
+              className="label-type block cursor-pointer border-b border-border-soft py-4 text-subtle last:border-b-0"
             >
               {label}
             </a>
